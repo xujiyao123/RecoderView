@@ -8,18 +8,23 @@
 
 #import <UIKit/UIKit.h>
 
-@class TripGestureRecognizer;
-@protocol VoicePaoPaoViewDelegate;
 @class AVAudioPlayer;
+@class AVPlayer;
+@class TripGestureRecognizer;
+
+@protocol VoicePaoPaoViewDelegate;
+
 
 @interface VoicePaoPaoView : UIView
 
 @property(nonatomic, assign) id<VoicePaoPaoViewDelegate>delegate;
 
 @property(nonatomic, retain) AVAudioPlayer *player;
+@property (nonatomic ,retain) AVPlayer * avPlayer;
 @property(nonatomic, retain) NSMutableArray *imageArray;
 
 @property(nonatomic, retain) NSString *voicePath;
+@property(nonatomic ,retain) NSString * voiceUrl;
 
 @property (weak, nonatomic) IBOutlet UILabel *timeLabel;
 

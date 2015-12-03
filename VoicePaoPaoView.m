@@ -6,11 +6,14 @@
 //  Copyright © 2015年 Sunny土. All rights reserved.
 //
 
-#import <AVFoundation/AVFoundation.h>
+
 #import "VoicePaoPaoView.h"
+#import <AVFoundation/AVFoundation.h>
 #import "TripGestureRecognizer.h"
 #import <objc/runtime.h>
+
 static char VOICEPATHKEY;
+static char VOICEURLKEY;
 
 @implementation VoicePaoPaoView
 -(void)setVoicePath:(NSString *)voicePath {
@@ -18,15 +21,25 @@ static char VOICEPATHKEY;
     objc_setAssociatedObject(self, &VOICEPATHKEY, voicePath, OBJC_ASSOCIATION_RETAIN_NONATOMIC);
     
 
-     self.player = [[AVAudioPlayer alloc]initWithContentsOfURL:[NSURL fileURLWithPath:voicePath] error:nil];
-    [_player prepareToPlay];
-    self.timeLabel.text = [NSString stringWithFormat:@"%.0f''"  ,  self.player.duration];
+   AVAudioPlayer * player = [[AVAudioPlayer alloc]initWithContentsOfURL:[NSURL fileURLWithPath:voicePath] error:nil];
+    [player prepareToPlay];
+    self.timeLabel.text = [NSString stringWithFormat:@"%.0f''"  ,  player.duration];
     
 }
 -(NSString *)voicePath {
     return objc_getAssociatedObject(self, &VOICEPATHKEY);
 }
-
+-(void)setVoiceUrl:(NSString *)voiceUrl {
+    
+    objc_setAssociatedObject(self, &VOICEURLKEY, voiceUrl, OBJC_ASSOCIATION_RETAIN_NONATOMIC);
+    AVPlayer * player = [[AVPlayer alloc]initWithURL:[NSURL URLWithString:voiceUrl]];
+    
+    self.timeLabel.text = [NSString stringWithFormat:@"%.0f''" ,CMTimeGetSeconds(player.currentItem.duration)];
+    
+}
+-(NSString *)voiceUrl {
+    return objc_getAssociatedObject(self, &VOICEURLKEY);
+}
 
 - (void)awakeFromNib {
 
@@ -35,7 +48,7 @@ static char VOICEPATHKEY;
     TripGestureRecognizer * tap = [[TripGestureRecognizer alloc] initWithTarget:self action:@selector(gestureAction:)];
     [_voiceImageView addGestureRecognizer:tap];
 
-
+    
 
 
 }
@@ -53,7 +66,7 @@ static char VOICEPATHKEY;
             NSError * error;
             [[AVAudioSession sharedInstance] setCategory:AVAudioSessionCategoryPlayAndRecord error:nil];
 //
-//            self.player = [[AVAudioPlayer alloc]initWithContentsOfURL:[NSURL fileURLWithPath:self.voicePath] error:&error];
+            self.player = [[AVAudioPlayer alloc]initWithContentsOfURL:[NSURL fileURLWithPath:self.voicePath] error:&error];
 //
             [self.player play];
 
@@ -70,11 +83,29 @@ static char VOICEPATHKEY;
         
 
 
-    } else {
+    } else if(self.voiceUrl){
+        
+        NSError * error;
+        [[AVAudioSession sharedInstance] setCategory:AVAudioSessionCategoryPlayAndRecord error:&error];
+        //
+        self.avPlayer = [[AVPlayer alloc]initWithURL:[NSURL URLWithString:self.voiceUrl]];
+        [self.avPlayer play];
+        if (error) {
+            dispatch_async(dispatch_get_main_queue(), ^{
+                NoTitleAlert(@"发生未知错误!");
+            });
+        }
+        
         [self animanPlay];
-
-        [NSTimer scheduledTimerWithTimeInterval:3 target:self selector:@selector(animStop) userInfo:nil repeats:NO];
-
+        
+        [NSTimer scheduledTimerWithTimeInterval:CMTimeGetSeconds(self.avPlayer.currentItem.duration) target:self selector:@selector(animStop) userInfo:nil repeats:NO];
+        
+        
+          }else {
+              [self animanPlay];
+              
+              [NSTimer scheduledTimerWithTimeInterval:3 target:self selector:@selector(animStop) userInfo:nil repeats:NO];
+            
     }
 
 
