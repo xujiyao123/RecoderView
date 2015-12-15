@@ -15,6 +15,10 @@
 static char VOICEPATHKEY;
 static char VOICEURLKEY;
 
+@interface VoicePaoPaoView()<XXNibBridge>
+
+@end
+
 @implementation VoicePaoPaoView
 -(void)setVoicePath:(NSString *)voicePath {
     
@@ -43,17 +47,19 @@ static char VOICEURLKEY;
 
 - (void)awakeFromNib {
 
-    self.imageArray = [NSMutableArray array];
+   
     _voiceImageView.userInteractionEnabled = YES;
     TripGestureRecognizer * tap = [[TripGestureRecognizer alloc] initWithTarget:self action:@selector(gestureAction:)];
     [_voiceImageView addGestureRecognizer:tap];
 
-    
+
 
 
 }
 
 - (void)gestureAction:(TripGestureRecognizer *)gestureAction {
+    
+
 
     if ([self.delegate respondsToSelector:@selector(paopaoView:didTapView:gesture:)]) {
         
@@ -116,15 +122,25 @@ static char VOICEURLKEY;
 
 
 }
+
+
+
 -(void)animanPlay
 {
+    
+    NSMutableArray * imageArray ;
+    if ([self.delegate respondsToSelector:@selector(imageArryForPaopaoView:)] ){
+         imageArray  = [self.delegate imageArryForPaopaoView:self];
+    }else {
+        
+        imageArray = [NSMutableArray array];
+    }
 
-
-  if (_imageArray.count == 0) {
+  if (imageArray.count == 0) {
       for (int i = 1; i < 4; i++) {
 
           UIImage *image = [UIImage imageNamed:[NSString stringWithFormat:@"voicesend%d.png" , i]];
-          [_imageArray addObject:image];
+          [imageArray addObject:image];
 
       }
   }
@@ -132,7 +148,7 @@ static char VOICEURLKEY;
 
 
     //设置动画数组
-    [_voiceAnn setAnimationImages:_imageArray];
+    [_voiceAnn setAnimationImages:imageArray];
     //设置动画时常
     [_voiceAnn setAnimationDuration:0.7];
     //开始动画

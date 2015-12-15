@@ -21,7 +21,7 @@
 
 @property(nonatomic, retain) AVAudioPlayer *player;
 @property (nonatomic ,retain) AVPlayer * avPlayer;
-@property(nonatomic, retain) NSMutableArray *imageArray;
+
 
 @property(nonatomic, retain) NSString *voicePath;
 @property(nonatomic ,retain) NSString * voiceUrl;
@@ -37,7 +37,13 @@
 @protocol VoicePaoPaoViewDelegate <NSObject>
 
 
+@optional
 
 - (void)paopaoView:(VoicePaoPaoView *)paoPaoView didTapView:(UIImageView *)view gesture:(TripGestureRecognizer *)gestureRecognizer;
+
+- (NSMutableArray *)imageArryForPaopaoView:(VoicePaoPaoView *)paopaoView;
+
+
+
 
 @end
