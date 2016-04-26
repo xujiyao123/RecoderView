@@ -15,7 +15,7 @@
 static char VOICEPATHKEY;
 static char VOICEURLKEY;
 
-@interface VoicePaoPaoView()<XXNibBridge>
+@interface VoicePaoPaoView()
 
 @end
 
